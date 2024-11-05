@@ -1,4 +1,4 @@
-# bizz_skin_mobile
+# TUGAS PBP Mobile Nur Khoirunnisa Salsabila - BIZZ SKIN
 
 Nama: Nur Khoirunnisa Salsabila
 
