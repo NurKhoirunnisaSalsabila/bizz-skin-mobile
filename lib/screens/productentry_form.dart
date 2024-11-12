@@ -37,8 +37,8 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
                   decoration: InputDecoration(
-                    hintText: "Nama Produk",
-                    labelText: "Nama Produk",
+                    hintText: "Product Name",
+                    labelText: "Product Name",
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(5.0),
                     ),
@@ -67,8 +67,8 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                 child: TextFormField(
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
-                    hintText: "Jumlah",
-                    labelText: "Jumlah",
+                    hintText: "Amount",
+                    labelText: "Amount",
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(5.0),
                     ),
@@ -100,8 +100,8 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                 child: TextFormField(
                   maxLines: 4,
                   decoration: InputDecoration(
-                    hintText: "Deskripsi",
-                    labelText: "Deskripsi",
+                    hintText: "Description",
+                    labelText: "Description",
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(5.0),
                     ),
@@ -145,9 +145,9 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text('Nama: $_name'),
-                                    Text('Jumlah: $_amount'),
-                                    Text('Deskripsi: $_description'),
+                                    Text('Name: $_name'),
+                                    Text('Amount: $_amount'),
+                                    Text('Description: $_description'),
                                   ],
                                 ),
                               ),
