@@ -257,3 +257,293 @@ Contoh: final String name = getName()
 
 
 </details>
+
+
+<details>
+  <summary>TUGAS 8</summary>
+
+# 1. Apa kegunaan `const` di Flutter? Jelaskan apa keuntungan ketika menggunakan `const` pada kode Flutter? Kapan sebaiknya kita menggunakan `const`, dan kapan sebaiknya tidak digunakan?
+
+## - Kegunaan `const` di Flutter?
+Pada Flutter, `const` digunakan untuk membuat objek atau widget bersifat immutable (tidak berubah) dan pada waktu kompilasi (compile-time). Ketika sebuah widget atau objek diinisialisasi dengan `const`, Flutter mengalokasikan memori hanya sekali dan dapat melakukan optimisasi untuk tidak membuat ulang objek tersebut jika digunakan berulang kali.
+
+## - Keuntungan ketika menggunakan `const` pada Flutter?
+* Dengan mendefinisikan widget sebagai `const`, Flutter dapat menggunakan objek yang sama di beberapa tempat tanpa membuat ulang widget, menghemat memori (memori lebih efisien).
+* Karena widget `const` tidak berubah, Flutter dapat menghindari rendering ulang pada setiap perubahan state yang tidak mempengaruhi widget tersebut (mengoptimalkan performa aplikasi).
+* Kode menjadi lebih mudah diprediksi dan stabil, karena nilai const tidak bisa diubah setelah diinisialisasi.
+
+
+## - Kapan sebaiknya kita menggunakan `const`?
+* Ketika kita tahu bahwa widget tidak akan berubah atau ketika kita tidak ingin widget tersebut dirender ulang setiap kali ada perubahan state di atasnya.
+* Widget yang tidak bergantung pada data dinamis
+
+## - Kapan sebaiknya kita tidak menggunakan `const`?
+* Jika widget atau objek memiliki nilai yang berubah selama runtime atau bergantung pada input yang tidak diketahui saat compile-time.
+* Widget yang bergantung pada data dinamis
+
+## Contoh penggunaan `const` pada kode saya:
+```dart
+ const SizedBox(height: 16.0),
+            Center(
+              child: Column(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(top: 16.0),
+                    child: Text(
+                      'Welcome to Bizz Skin!',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18.0,
+                      ),
+                    ),
+                  ),
+```
+
+# 2. Jelaskan dan bandingkan penggunaan Column dan Row pada Flutter. Berikan contoh implementasi dari masing-masing layout widget ini!
+
+## Column
+* Widget yang digunakan untuk menata anak-anaknya secara vertikal. Setiap widget anak akan ditempatkan di bawah widget anak yang sebelumnya.
+* Menggunakan mainAxisAlignment untuk pengaturan vertikal
+* Menggunakan crossAxisAlignment untuk pengaturan horizontal
+
+* Contoh implementasi column pada kode saya:
+  ```dart
+  Column(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(top: 16.0),
+                    child: Text(
+                      'Welcome to Bizz Skin!',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18.0,
+                      ),
+                    ),
+                  ),
+                  GridView.count(
+                    primary: true,
+                    padding: const EdgeInsets.all(20),
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    crossAxisCount: 3,
+                    shrinkWrap: true,
+                    children: items.map((ItemHomepage item) {
+                      return ItemCard(item);
+                    }).toList(),
+                  ),
+                ],
+              ),
+Pada `MenuScreen`, `Column` digunakan untuk menata widget secara vertikal, seperti teks "Welcome to Bizz Skin!" dan `GridView` yang menampilkan item-item menu.
+  
+## Row
+* Widget yang digunakan untuk menata anak-anaknya secara horizontal. Setiap widget anak akan ditempatkan di sebelah kanan widget anak sebelumnya.
+* Menggunakan mainAxisAlignment untuk pengaturan horizontal
+* Menggunakan crossAxisAlignment untuk pengaturan vertikal
+
+*Contoh implementasi dari kode saya:
+```dart
+Row(
+  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+  children: [
+    InfoCard(title: 'NPM', content: userId),
+    InfoCard(title: 'Username', content: userName),
+    InfoCard(title: 'Class', content: className),
+  ],
+```
+Pada halaman `MenuScreen`, `Row` digunakan untuk menata `InfoCard` secara horizontal. Dengan demikian, informasi pengguna ditampilkan dalam satu baris.
+
+## Perbandingan penggunaan Column dan Row pada Flutter
+- Gunakan Column ketika:
+  * Menampilkan daftar item secara vertikal
+  * Membuat form dengan input fields
+  * Menyusun konten dari atas ke bawah
+
+- Gunakan Row ketika:
+  * Membuat navigation bar
+  * Menampilkan item secara horizontal
+  * Menyusun tombol berdampingan
+  * Membuat layout dengan elemen sejajar horizontal
+ 
+- Perbandingan properties penting column dan row:
+  1. mainAxisAlignment:
+     * Column: Mengatur posisi vertikal (top, center, bottom, spaceEvenly, etc.)
+     * Row: Mengatur posisi horizontal (start, center, end, spaceEvenly, etc.)
+  2. crossAxisAlignment:
+     * Column: Mengatur posisi horizontal (start, center, end, stretch)
+     * Row: Mengatur posisi vertikal (start, center, end, stretch)
+   3. mainAxisSize:
+      * min: Mengambil ruang minimal yang dibutuhkan
+      * max: Mengambil seluruh ruang yang tersedia
+        
+- Kesimpulan:
+  * Column:
+    1. Arah: Vertikal (atas ke bawah)
+    2. Main Axis: Vertikal
+    3. Cross Axis: Horizontal
+  * Row:
+    1. Arah: Horizontal (kiri ke kanan)
+    2. Main Axis: Horizontal
+    3. Cross Axis: Vertikal
+
+# 3. Sebutkan apa saja elemen input yang kamu gunakan pada halaman form yang kamu buat pada tugas kali ini. Apakah terdapat elemen input Flutter lain yang tidak kamu gunakan pada tugas ini? Jelaskan!
+
+**Pada halaman form   ProductEntryFormPage   di aplikasi Bizz Skin, elemen input yang digunakan adalah sebagai berikut:**
+
+* TextFormField untuk input teks umum (nama produk dan deskripsi produk):
+  - Nama produk diinput menggunakan TextFormField dengan validasi yang memastikan bahwa input tidak kosong, memiliki panjang minimal 3 karakter, dan maksimal 50 karakter.
+  - Deskripsi produk juga menggunakan TextFormField dengan validasi untuk memastikan input tidak kosong, memiliki panjang minimal 5 karakter, dan maksimal 500 karakter.
+* TextFormField untuk input angka (jumlah produk):
+  - Jumlah produk diinput menggunakan TextFormField dengan tipe input angka (number) serta validasi yang memastikan input tidak kosong, berupa angka, bernilai non-negatif, tidak boleh 0, dan tidak lebih dari 10,000.
+* ElevatedButton untuk menyimpan data yang telah dimasukkan ke dalam form.
+
+**Elemen input flutter lain yang tidak saya gunakan pada tugas ini**
+* `Checkbox`:
+  - untuk input boolean, misal opsi ya/tidak.
+  - Cocok untuk multiple selection
+  - Contoh: daftar todo, pemilihan fitur/opsi
+* `DropdownButton`:
+  - Untuk memilih satu item dari daftar opsi
+  - Hemat ruang karena opsi tersembunyi
+  - Contoh: pemilihan kategori, filter
+* `DatePicker`:
+  - Untuk memilih tanggal
+  - Interface kalender yang user-friendly
+  - Contoh: tanggal lahir, jadwal appointment
+* `TimePicker`:
+  - Untuk memilih waktu
+  - Interface jam yang user-friendly
+  - Contoh: pengaturan alarm, jadwal meeting
+* `Radio Button`:
+  - Untuk memilih satu opsi dari beberapa pilihan
+  - Hanya satu pilihan yang bisa dipilih
+  - Contoh: pemilihan gender, tingkat pendidikan
+* `Switch`:
+  -  Toggle on/off (untuk input boolean dengan tampilan switch)
+  -  Biasanya untuk pengaturan
+  -  Contoh: dark mode, notifikasi
+* `Slider`:
+  - Untuk memilih nilai dalam rentang tertentu (untuk input angka dalam rentang tertentu dengan cara menggeser)
+  - Cocok untuk input numerik dengan range
+  - Contoh: volume, brightness, filter strength
+* `ColorPicker`:
+  - Untuk memilih warna
+  - Biasanya untuk customization
+  - Contoh: tema aplikasi, pengaturan tampilan
+
+# 4. Bagaimana cara kamu mengatur tema (theme) dalam aplikasi Flutter agar aplikasi yang dibuat konsisten? Apakah kamu mengimplementasikan tema pada aplikasi yang kamu buat?
+
+**Ya, saya telah mengimplementasikan tema dalam aplikasi Bizz Skin Mobile. Implementasi ini ada dalam file   `main.dart`:**
+```dart
+theme: ThemeData(
+  colorScheme: ColorScheme.fromSwatch().copyWith(
+    primary: const Color(0xFF800000),
+    secondary: const Color(0xFF600000),
+  ),
+  useMaterial3: true,
+),
+```
+
+Pada Flutter, konsistensi tema dapat diatur menggunakan `ThemeData`, yang diterapkan secara global dalam `MaterialApp` melalui properti `theme`. Dengan demikian, memungkinkan kita untuk mengatur warna, font, dan gaya visual lainnya secara konsisten. Nanti tema akan diterapkan secara global ke seluruh app, semua widget juga akan mengikuti gaya yang telah diset.
+
+Pada Bizz Skin, tema diatur di dalam `main.dart`, dan tema digunakan untuk menetapkan warna primer dan sekunder yang konsisten di seluruh aplikasi. Warna utama dengan `primary: const Color(0xFF800000)`, Warna sekunder dengan `secondary: const Color(0xFF600000)`, supaya tidak monoton, tetapi tetap konsisten. Kemudian Properti `useMaterial3` diset `true`.
+
+# 5. Bagaimana cara kamu menangani navigasi dalam aplikasi dengan banyak halaman pada Flutter?
+Di aplikasi Bizz Skin, navigasi antar halaman diatur menggunakan `Navigator` dan `MaterialPageRoute`:
+
+- `Navigator.push` digunakan untuk menavigasi ke halaman baru dan menambahkan halaman tersebut ke dalam stack navigasi.
+- `Navigator.pushReplacement` digunakan untuk menavigasi ke halaman baru dengan menggantikan halaman saat ini di stack navigasi.
+
+1. Navigasi dari `MenuScreen` ke `ProductEntryFormPage` terjadi saat pengguna menekan tombol "Tambah Produk".
+```dart
+Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ProductEntryFormPage(),
+              ),
+            );
+          }
+```
+Contoh lain:
+```dart
+// ... existing code ...
+ListTile(
+  leading: const Icon(Icons.home_outlined),
+  title: const Text('Halaman Utama'),
+  onTap: () {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MenuScreen(), // Menuju ke MenuScreen
+      ),
+    );
+  },
+),
+```
+Ini akan menavigasi ke `MenuScreen` (Halaman Utama)
+
+```dart
+ListTile(
+  leading: const Icon(Icons.shopping_bag),
+  title: const Text('Tambah Produk'),
+  onTap: () {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const ProductEntryFormPage(), // Menuju ke ProductEntryFormPage
+      ),
+    );
+  },
+),
+```
+Ini akan menavigasi ke `ProductEntryFormPage` (halaman form tambah produk)
+
+
+2. Untuk navigasi dari `LeftDrawer` ke halaman page item menu yang sesuai dipilih user.
+```dart
+ ListTile(
+            leading: const Icon(Icons.home_outlined),
+            title: const Text('Halaman Utama'),
+            onTap: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => MenuScreen(), // hapus const
+                ),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.shopping_bag),
+            title: const Text('Tambah Produk'),
+            onTap: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ProductEntryFormPage(),
+                ),
+              );
+            },
+          ),
+        ],
+```
+**Kesimpulan:**
+Navigasi yang Sudah Diimplementasikan
+1. `product_card.dart`
+   ```dart
+   // Navigasi dari card ke form
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const ProductEntryFormPage(),
+      ),
+    );
+2. left_drawer.dart
+   ```dart
+   // Navigasi dari drawer dengan pushReplacement
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MenuScreen(),
+      ),
+    );
+</details>
