@@ -105,8 +105,8 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
                   decoration: InputDecoration(
-                    hintText: "Jumlah",
-                    labelText: "Jumlah",
+                    hintText: "Price",
+                    labelText: "Price",
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(5.0),
                     ),
@@ -118,17 +118,15 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                   },
                   validator: (String? value) {
                     if (value == null || value.isEmpty) {
-                      return "Jumlah tidak boleh kosong!";
+                      return "Price tidak boleh kosong!";
                     }
                     if (int.tryParse(value) == null) {
-                      return "Jumlah harus berupa angka!";
+                      return "Price harus berupa angka!";
                     }
                     if (int.parse(value) <= 0) {
-                      return "Jumlah tidak boleh berjumlah 0 atau negatif!";
+                      return "Price tidak boleh berjumlah 0 atau negatif!";
                     }
-                    if (int.parse(value) > 10000) {
-                      return "Jumlah tidak boleh lebih dari 10000!";
-                    }
+                    
                     return null;
                   },
                 ),
