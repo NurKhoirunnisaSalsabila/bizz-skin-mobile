@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:bizz_skin_mobile/screens/menu.dart';
 import 'package:bizz_skin_mobile/screens/productentry_form.dart';
+import 'package:bizz_skin_mobile/screens/list_productentry.dart';
 
 class LeftDrawer extends StatelessWidget {
   const LeftDrawer({super.key});
@@ -51,7 +52,7 @@ class LeftDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.shopping_bag),
+            leading: const Icon(Icons.add_shopping_cart),
             title: const Text('Tambah Produk'),
             onTap: () {
               Navigator.pushReplacement(
@@ -62,6 +63,16 @@ class LeftDrawer extends StatelessWidget {
               );
             },
           ),
+          ListTile(
+            leading: const Icon(Icons.shopping_bag),
+            title: const Text('Daftar Product'),
+            onTap: () {
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ListProductEntryPage()),
+                );
+            },
+        ),
         ],
       ),
     );
