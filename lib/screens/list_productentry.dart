@@ -3,6 +3,7 @@ import 'package:bizz_skin_mobile/models/product_entry.dart';
 import 'package:bizz_skin_mobile/widgets/left_drawer.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
+import 'package:bizz_skin_mobile/screens/detail_product.dart';
 
 class ListProductEntryPage extends StatefulWidget {
   const ListProductEntryPage({super.key});
@@ -56,30 +57,49 @@ class _ListProductEntryPageState extends State<ListProductEntryPage> {
             } else {
               return ListView.builder(
                 itemCount: snapshot.data!.length,
-                itemBuilder: (_, index) => Container(
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "${snapshot.data![index].fields.name}",
-                        style: const TextStyle(
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.bold,
+                itemBuilder: (_, index) => Card(
+                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DetailProductPage(
+                            product: snapshot.data![index],
+                          ),
                         ),
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "${snapshot.data![index].fields.name}",
+                            style: const TextStyle(
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Text("${snapshot.data![index].fields.description}"),
+                          const SizedBox(height: 10),
+                          Text("Rp ${snapshot.data![index].fields.price}"),
+                          const SizedBox(height: 10),
+                          Text("${snapshot.data![index].fields.skinType}"),
+                          const SizedBox(height: 10),
+                          const Text(
+                            "Tap untuk melihat detail",
+                            style: TextStyle(
+                              color: Colors.blue,
+                              fontSize: 12.0,
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 10),
-                      Text("${snapshot.data![index].fields.description}"),
-                      const SizedBox(height: 10),
-                      Text("${snapshot.data![index].fields.price}"),
-                      const SizedBox(height: 10),
-                       Text("${snapshot.data![index].fields.skinType}"),
-                      // const SizedBox(height: 10),
-                      // Text("${snapshot.data![index].fields.time}")
-                    ],
+                    ),
                   ),
                 ),
               );

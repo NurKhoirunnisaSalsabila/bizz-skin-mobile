@@ -170,65 +170,31 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                     ),
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
-                        // Tampilkan dialog loading
-                        showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (context) => const Center(
-                            child: CircularProgressIndicator(),
-                          ),
+                        final response = await request.postJson(
+                          "http://127.0.0.1:8000/create-flutter/",
+                          jsonEncode(<String, String>{
+                            'name': _name,
+                            'price': _price.toString(),
+                            'description': _description.toString(),
+                            'skin_type': _skinType,
+                          }),
                         );
-
-                        try {
-                          // Ubah URL ke 127.0.0.1 untuk Android emulator
-                          final response = await request.postJson(
-                            "http://127.0.0.1:8000/create-flutter/",
-                            jsonEncode({
-                              'name': _name,
-                              'price': _price,
-                              'description': _description,
-                              'skin_type': _skinType,
-                            }),
-                          );
-                          
-                          print('Response: $response'); // Tambahkan logging untuk debug
-                          
-                          if (context.mounted) {
-                            // Tutup dialog loading
-                            Navigator.pop(context);
-
-                            if (response['status'] == 'success') {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text("Produk baru berhasil disimpan!"),
-                                ),
-                              );
-                              // Kembali ke halaman utama
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(builder: (context) => MenuScreen()),
-                              );
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text("Error: ${response['message'] ?? 'Terjadi kesalahan'}"),
-                                ),
-                              );
-                            }
-                          }
-                        } catch (e) {
-                          print('Error details: $e'); // Tambahkan detail error
-                          // Tutup dialog loading
-                          if (context.mounted) {
-                            Navigator.pop(context);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text("Error: $e"),
-                                backgroundColor: Colors.red,
-                              ),
+                        if (context.mounted) {
+                          if (response['status'] == 'success') {
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              content: Text("Product baru berhasil disimpan!"),
+                            ));
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => MenuScreen()),
                             );
+                          } else {
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              content: Text("Terdapat kesalahan, silakan coba lagi."),
+                            ));
                           }
-                          print("Error: $e"); // Untuk debugging
                         }
                       }
                     },
