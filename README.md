@@ -547,3 +547,497 @@ Navigasi yang Sudah Diimplementasikan
       ),
     );
 </details>
+
+
+<details>
+  <summary>TUGAS 9</summary>
+  
+# 1. Jelaskan mengapa kita perlu membuat model untuk melakukan pengambilan ataupun pengiriman data JSON? Apakah akan terjadi error jika kita tidak membuat model terlebih dahulu?
+
+* Pentingnya model:
+  - Model mempermudah kita dalam mendefinisikan struktur data JSON yang akan dikirim atau diterima. Dengan menggunakan model, kita dapat memastikan bahwa data yang ditangani sesuai dengan format yang diinginkan.
+  - Kemudahan Parsing: Model menyediakan kerangka untuk parsing data JSON ke dalam objek yang dapat digunakan oleh aplikasi, sehingga mengurangi kesalahan pemrosesan data.
+  - Scalability: Jika data JSON berkembang, perubahan hanya perlu dilakukan pada model, bukan di seluruh bagian kode.
+  - Mempermudah akses data dengan properti yang terdefinisi
+  - Memudahkan maintenance code
+  - Meningkatkan readability
+  - Model memastikan tipe data yang konsisten
+  - Membantu menghindari runtime errors
+  - Memberikan autocomplete dan compile-time checking
+
+* Jika tidak membuat model:
+  - Error Parsing: Tanpa model, ada risiko tinggi error saat data yang diterima tidak sesuai dengan ekspektasi (misalnya, tipe data atau atribut yang salah).
+  - Code Maintenance: Kode akan menjadi sulit dipelihara karena tidak ada standar yang jelas untuk menangani data JSON.
+  - Tidak ada validasi tipe data
+  - Rawan typo saat mengakses keys
+  - Tidak ada autocomplete
+  - Lebih sulit untuk maintenance
+
+# 2. Jelaskan fungsi dari library http yang sudah kamu implementasikan pada tugas ini
+Library `http` digunakan untuk melakukan operasi HTTP dalam aplikasi, seperti:
+- Komunikasi dengan Django backend
+- Send request GET untuk mengambil data produk
+- Send request POST saat login/register
+- Handle response dari server
+- Atur headers dan cookies untuk autentikasi
+  
+# 3. Jelaskan fungsi dari CookieRequest dan jelaskan mengapa instance CookieRequest perlu untuk dibagikan ke semua komponen di aplikasi Flutter.
+Fungsi `CookieRequest:`
+* CookieRequest digunakan untuk menangani sesi pengguna dalam aplikasi Flutter dengan Django.
+* Menyimpan cookie yang diterima dari server setelah login, yang digunakan untuk autentikasi di permintaan berikutnya.
+* Mempermudah pengelolaan status login dan logout.
+* Digunakan di semua halaman yang perlu autentikasi
+* User tetap login saat pindah halaman
+* Handle cookies Django untuk security
+
+Mengapa instance perlu dibagikan ke semua komponen?
+* Konsistensi Sesi: Dengan instance yang sama, semua komponen dapat berbagi informasi sesi pengguna.
+* Mempermudah Akses Data: Komponen yang membutuhkan data sesi tidak perlu membuat ulang instance, sehingga menghemat memori dan menghindari multiple instances.
+* Integrasi Mudah: Komponen bisa langsung menggunakan cookie yang sudah tersimpan tanpa perlu pengaturan tambahan.
+
+# 4. Jelaskan mekanisme pengiriman data mulai dari input hingga dapat ditampilkan pada Flutter.
+
+1. User input data produk di form
+2. Data dikumpulkan saat tombol Save ditekan
+3. Flutter mengubah data jadi JSON
+4. Dikirim ke Django via POST request
+5. Django memproses dan simpan ke database
+6. Flutter fetch data terbaru
+7. Data ditampilkan dalam bentuk card
+
+penjelasan:
+1. Input Form
+   ```dart
+   // Form dibungkus dengan Form widget untuk validasi
+    Form(
+      key: _formKey, // Global key untuk mengakses state form
+      child: TextFormField(
+        controller: _nameController, // Controller untuk mengelola input
+        decoration: InputDecoration(
+          labelText: 'Nama Produk',
+          hintText: 'Masukkan nama produk',
+          border: OutlineInputBorder(),
+        ),
+        // Menyimpan nilai input ke variable
+        onChanged: (String? value) {
+          setState(() {
+            _name = value!;
+          });
+        },
+        // Validasi input
+        validator: (String? value) {
+          if (value == null || value.isEmpty) {
+            return "Nama tidak boleh kosong!";
+          }
+          return null;
+        },
+      ),
+    )
+
+2. Validasi Form
+   ```dart
+   // Ketika tombol submit ditekan
+    ElevatedButton(
+      onPressed: () async {
+        // Cek apakah semua validator dalam form passed
+        if (_formKey.currentState!.validate()) {
+          // Lanjut ke proses pengiriman data
+          _formKey.currentState!.save(); // Simpan nilai form
+        } else {
+          // Tampilkan pesan error jika validasi gagal
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Mohon isi semua field dengan benar!"),
+            ),
+          );
+        }
+      }
+    )
+
+3. Persiapan Data
+   ```dart
+   // Data dikumpulkan dari form dan diformat sesuai kebutuhan server
+    final data = {
+      'name': _name,
+      'price': _price.toString(),
+      'description': _description,
+      'skin_type': _skinType,
+    };
+    
+    // Data di-encode menjadi JSON
+    String jsonData = jsonEncode(data);
+
+4. Pengiriman ke Server
+   ```dart
+       try {
+      // Kirim request POST ke Django backend
+      final response = await request.postJson(
+        "http://127.0.0.1:8000/create-flutter/",
+        jsonData
+      );
+      
+      // request.postJson akan:
+      // 1. Menambahkan headers yang diperlukan (termasuk CSRF token)
+      // 2. Mengirim request dengan method POST
+      // 3. Menunggu response dari server
+      // 4. Menghandle cookies yang diterima
+      
+    } catch (e) {
+      // Handle error network atau server
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: ${e.toString()}")),
+      );
+    }
+
+5. Handle Response
+   ```dart
+       if (context.mounted) {
+      if (response['status'] == 'success') {
+        // Tampilkan pesan sukses
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Produk berhasil ditambahkan!"),
+          ),
+        );
+        
+        // Reset form
+        _formKey.currentState!.reset();
+        
+        // Navigate ke halaman lain (opsional)
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => ProductListPage()),
+        );
+        
+      } else {
+        // Tampilkan pesan error dari server
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(response['message'] ?? "Terjadi kesalahan"),
+          ),
+        );
+      }
+    }
+
+6. Di sisi Django (Backend)
+   ```dart
+   @csrf_exempt
+    def create_product_flutter(request):
+        if request.method == 'POST':
+            try:
+                data = json.loads(request.body)
+                
+                # Buat instance produk baru
+                new_product = Product.objects.create(
+                    user = request.user,
+                    name = data['name'],
+                    price = int(data['price']),
+                    description = data['description'],
+                    skin_type = data['skin_type']
+                )
+                
+                # Kirim response sukses
+                return JsonResponse({
+                    "status": "success",
+                    "message": "Product successfully created!"
+                }, status=200)
+                
+            except Exception as e:
+                # Kirim response error
+                return JsonResponse({
+                    "status": "error",
+                    "message": str(e)
+                }, status=400)
+
+
+# 5. Jelaskan mekanisme autentikasi dari login, register, hingga logout. Mulai dari input data akun pada Flutter ke Django hingga selesainya proses autentikasi oleh Django dan tampilnya menu pada Flutter.
+Login
+- User input username & password
+- Data dikirim ke endpoint Django `/auth/login/`
+- Django validasi kredensial
+- Jika valid, buat session & kirim cookie
+- Flutter simpan cookie di CookieRequest
+- Redirect ke menu utama
+- Penjelasan:
+  ```dart
+    // 1. Input credentials di Flutter
+  final response = await request.login(
+    "http://127.0.0.1:8000/auth/login/",
+    {
+      'username': username,
+      'password': password,
+    }
+  );
+
+  // 2. Django memvalidasi
+  // 3. Django mengirim response
+  // 4. Flutter menerima dan mengupdate UI
+
+Register
+- User isi form registrasi
+- Data dikirim ke `/auth/register/`
+- Django validasi & buat user baru
+- Redirect ke login page
+- Penjelasan:
+  ```dart
+  // 1. Input data registrasi
+  final response = await request.postJson(
+    "http://127.0.0.1:8000/auth/register/",
+    jsonEncode({
+      "username": username,
+      "password1": password1,
+      "password2": password2,
+    })
+  );
+  
+  // 2. Django membuat user baru
+  // 3. Response dikirim ke Flutter
+
+Logout
+- User tekan tombol logout
+- Request ke `/auth/logout/`
+- Django hapus session
+- Flutter hapus cookie
+- Kembali ke login page
+- Penjelasan:
+  ```dart
+  // 1. Request logout
+  final response = await request.logout(
+    "http://127.0.0.1:8000/auth/logout/"
+  );
+  
+  // 2. Django menghapus session
+  // 3. Flutter update UI ke login page
+
+
+## Login, Register, dan Logout Flow
+
+### **1. Login**
+   
+**A. Di Flutter (Frontend):**
+```dart
+// 1. User mengisi form login
+final _usernameController = TextEditingController();
+final _passwordController = TextEditingController();
+
+// 2. Saat tombol login ditekan
+ElevatedButton(
+  onPressed: () async {
+    String username = _usernameController.text;
+    String password = _passwordController.text;
+
+    // 3. Kirim request login ke Django
+    final response = await request.login(
+      "http://127.0.0.1:8000/auth/login/",
+      {
+        'username': username,
+        'password': password,
+      }
+    );
+
+    // 4. Handle response
+    if (request.loggedIn) {
+      String message = response['message'];
+      String uname = response['username'];
+      
+      // 5. Jika sukses, navigate ke home
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => MenuScreen()),
+      );
+      
+      // 6. Tampilkan pesan sukses
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("$message Selamat datang, $uname.")),
+      );
+    } else {
+      // 7. Jika gagal, tampilkan error
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Login Gagal'),
+          content: Text(response['message']),
+          actions: [
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        ),
+      );
+    }
+  },
+)
+```
+**B. Di Django (Backend):**
+```dart
+@csrf_exempt
+def login(request):
+    username = request.POST['username']
+    password = request.POST['password']
+    
+    user = authenticate(username=username, password=password)
+    if user is not None:
+        if user.is_active:
+            auth_login(request, user)
+            return JsonResponse({
+                "status": True,
+                "message": "Login sukses!",
+                "username": user.username,
+                "user_id": user.id,
+            })
+    return JsonResponse({
+        "status": False,
+        "message": "Username atau password salah!"
+    })
+```
+
+
+### **2. Register Flow**
+   
+**A. Di Flutter:**
+```dart
+// 1. User mengisi form register
+final _usernameController = TextEditingController();
+final _passwordController = TextEditingController();
+final _confirmPasswordController = TextEditingController();
+
+// 2. Saat tombol register ditekan
+ElevatedButton(
+  onPressed: () async {
+    String username = _usernameController.text;
+    String password1 = _passwordController.text;
+    String password2 = _confirmPasswordController.text;
+
+    // 3. Validasi password match
+    if (password1 != password2) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Password tidak cocok!")),
+      );
+      return;
+    }
+
+    // 4. Kirim request register ke Django
+    final response = await request.postJson(
+      "http://127.0.0.1:8000/auth/register/",
+      jsonEncode({
+        "username": username,
+        "password1": password1,
+        "password2": password2,
+      })
+    );
+
+    // 5. Handle response
+    if (response['status'] == 'success') {
+      // 6. Jika sukses, navigate ke login
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginPage()),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Registrasi berhasil!")),
+      );
+    } else {
+      // 7. Jika gagal, tampilkan error
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(response['message'])),
+      );
+    }
+  },
+)
+```
+
+**B. Di Django (Backend):**
+```dart
+@csrf_exempt
+def register(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        
+        try:
+            # Validasi data
+            if data['password1'] != data['password2']:
+                return JsonResponse({
+                    'status': 'failed',
+                    'message': 'Password tidak cocok!'
+                })
+                
+            # Cek username exists
+            if User.objects.filter(username=data['username']).exists():
+                return JsonResponse({
+                    'status': 'failed',
+                    'message': 'Username sudah digunakan!'
+                })
+                
+            # Buat user baru
+            user = User.objects.create_user(
+                username=data['username'],
+                password=data['password1']
+            )
+            user.save()
+            
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Register berhasil!'
+            })
+            
+        except Exception as e:
+            return JsonResponse({
+                'status': 'failed',
+                'message': str(e)
+            })
+```
+
+### **3. Logout Flow**
+
+**A. Di Flutter:**
+```dart
+// 1. Saat tombol logout ditekan
+onTap: () async {
+  // 2. Kirim request logout
+  final response = await request.logout(
+    "http://127.0.0.1:8000/auth/logout/"
+  );
+  
+  // 3. Handle response
+  if (response['status']) {
+    String uname = response["username"];
+    
+    // 4. Tampilkan pesan sukses
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Logout berhasil! Sampai jumpa, $uname.")),
+    );
+    
+    // 5. Navigate ke login page
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginPage()),
+    );
+  }
+}
+```
+
+**B. Di Django (Backend):**
+```dart
+@csrf_exempt
+def logout(request):
+    username = request.user.username
+    try:
+        auth_logout(request)
+        return JsonResponse({
+            "status": True,
+            "message": "Logout berhasil!",
+            "username": username
+        })
+    except:
+        return JsonResponse({
+            "status": False,
+            "message": "Logout gagal!"
+        })
+```
+ 
+
+# 6. Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step! (bukan hanya sekadar mengikuti tutorial).
+
+
+</details>  
